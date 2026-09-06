@@ -1,0 +1,140 @@
+H☆SHI
+欲しいを、あきらめない。
+{{ user.username[0]|upper }}
+{% if view == 'home' %}
+☆
+✦
+✧
+H☆SHI
+買いに行けない「欲しい」を、 行ける誰かにつなぐ。
+ファッション・POPUP・限定商品を中心に、欲しい人と代行できる人をつなぐショッピング代行サービス。
+＋ 投稿する検索する
+おすすめフォロー中
+{% for p in posts %}
+{{ p.username[0]|upper }}
+@{{p.username}} {% if p.verified %}✓{% endif %}
+⭐ {{'%.2f'|format(p.rating)}} ・ {{p.location or '場所未定'}}
+{{'代行依頼' if p.post_type=='request' else '代行可能'}}
+{{p.title}}
+{{p.body}}
+代行費¥{{"{:,}".format(p.proxy_fee)}}
+♡ {{p.likes_count}}
+💬 {{p.comments_count}}詳細を見る →
+{% else %}
+まだ投稿がありません ☆
+{% endfor %}
+{% elif view == 'search' %}
+検索
+ブランド・場所・イベント名から探せます。
+{{q}}検索
+{% for p in posts %}
+{{p.username[0]|upper}}
+@{{p.username}}
+{{p.location}} ・ {{p.target_date}}
+{{'代行依頼' if p.post_type=='request' else '代行可能'}}
+{{p.title}}
+{{p.body}}
+代行費¥{{"{:,}".format(p.proxy_fee)}}
+{% else %}
+キーワードを入れて検索してね ☆
+{% endfor %}
+{% elif view == 'new_post' %}
+投稿する
+「代行依頼」も「代行可能」もここから投稿できます。
+投稿タイプ代行依頼代行可能タイトル内容
+場所日付
+商品予定価格代行費
+投稿する ☆
+{% elif view == 'detail' %}
+投稿詳細
+{{post.username[0]|upper}}
+@{{post.username}} ✓
+⭐ {{post.rating}} ・ 成立率 {{post.success_rate}}%
+{{'代行依頼' if post.post_type=='request' else '代行可能'}}
+{{post.title}}
+{{post.body}}
+場所{{post.location or '-'}}
+日付{{post.target_date or '-'}}
+代行費¥{{"{:,}".format(post.proxy_fee)}}
+応募する
+提案する代行費メッセージ応募を送る
+{% for a in applications %}
+@{{a.username}}⭐ {{a.rating}} / 成立率 {{a.success_rate}}%¥{{"{:,}".format(a.fee_offer)}}
+{% endfor %}
+コメント
+{% for c in comments %}
+@{{c.username}} {{c.body}}
+{% else %}
+まだコメントはありません。
+{% endfor %}
+送信
+{% elif view == 'transactions' %}
+取引
+進行中の取引を確認できます。
+{% for tx in transactions %}
+☆
+{{tx.title}}
+依頼者 @{{tx.requester_name}} / 代行者 @{{tx.agent_name}}
+{{tx.status}}
+合計予定¥{{"{:,}".format(tx.product_price + tx.proxy_fee + tx.platform_fee + tx.shipping_estimate)}}
+取引を見る →チャット
+{% else %}
+取引はまだありません。
+{% endfor %}
+{% elif view == 'transaction' %}
+取引画面
+{{'依頼者側' if role=='requester' else '代行者側'}}ビュー
+依頼者側代行者側
+{{tx.title}}{{tx.status}}
+
+商品代¥{{"{:,}".format(tx.product_price)}}
+代行費¥{{"{:,}".format(tx.proxy_fee)}}
+H☆SHI手数料 5.5%¥{{"{:,}".format(tx.platform_fee)}}
+送料見込み¥{{"{:,}".format(tx.shipping_estimate)}}
+{% if role == 'requester' %}
+購入証明
+{{'✓ レシート添付済み' if tx.receipt_attached else '未添付'}}
+商品写真
+{% for p in proofs if p.kind=='item_photo' %}{% else %}
+☆正面
+☆背面
+☆付属品
+{% endfor %}
+チャットを開く
+{% else %}
+購入証明を添付
+レシート/決済明細を添付
+商品写真を添付
+商品写真を追加
+配送先
+東京都 ○○区 ○○ 1-2-3
+取引中のみ表示。取引終了後は非表示。
+手渡し/ロッカー 6桁コード {{tx.delivery_code}}
+チャットを開く
+{% endif %} {% elif view == 'chat' %}
+チャット
+{{tx.title}}
+@{{tx.requester_name}}⇄@{{tx.agent_name}}
+{% for m in messages %}
+@{{m.username}}
+{{m.body}}
+{% else %}
+まだメッセージはありません。
+{% endfor %}
+送信
+取引画面へ戻る
+{% elif view == 'profile' %}
+☆
+@{{user.username}}
+本人確認済み ✓
+⭐ {{user.rating}} / 取引成立率 {{user.success_rate}}%
+H☆SHI残高 ¥{{"{:,}".format(user.balance)}}
+自分の投稿
+{% for p in myposts %}
+{{'代行依頼' if p.post_type=='request' else '代行可能'}}{{p.title}}
+{{p.status}}
+{% else %}
+まだ投稿がありません。
+{% endfor %}
+{% endif %}
+⌂ホーム ⌕検索 ＋投稿 ✉取引 ☆マイページ
